@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hastes</title>
+
+<style>
+body {
+  margin: 0;
+  background: #121212;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+#game {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 22px;
+}
+
+#rods {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  margin-top: 20px;
+}
+
+.rod {
+  width: 52px;
+  height: 170px;
+  border: 3px solid #444;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.rod.selected {
+  border-color: #fff;
+}
+
+.block {
+  width: 100%;
+  height: 36px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+#controls {
+  margin-top: 20px;
+  text-align: center;
+}
+
+button {
+  background: #4caf50;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+  <h1>Hastes</h1>
+  <div id="rods"></div>
+
+  <div id="controls">
+    <button id="nextBtn" style="display:none;">Próximo nível</button>
+  </div>
+</div>
+
+<script>
+/* =========================
+   CONFIGURAÇÃO
+========================= */
+const MAX_BLOCKS = 4;
+
+const levels = [
+{
+  rods: [
+    ['red','blue','red','blue'],
+    ['blue','red','blue','red'],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','red','blue','blue'],
+    ['blue','blue','red','red'],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','blue','blue','red'],
+    ['blue','red','red','blue'],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','red','blue','red'],
+    ['blue','blue','red','blue'],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','blue','red','blue'],
+    ['blue','red','blue','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','red','blue','blue'],
+    ['blue','red','red','blue'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','blue','blue','blue'],
+    ['blue','red','red','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','red'],
+    ['green','blue','red','green'],
+    ['blue','red','green','blue'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','red','blue'],
+    ['green','blue','green','red'],
+    ['blue','red','blue','green'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','red','green','blue'],
+    ['green','blue','blue','red'],
+    ['blue','green','red','green'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','green'],
+    ['green','blue','red','blue'],
+    ['blue','red','green','red'],
+    [],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','red','green'],
+    ['blue','blue','green','red'],
+    ['green','red','blue','blue'],
+    [],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','yellow'],
+    ['yellow','blue','green','red'],
+    ['red','green','blue','yellow'],
+    ['yellow','blue','green','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','blue','green','yellow'],
+    ['yellow','green','blue','red'],
+    ['red','blue','green','yellow'],
+    ['yellow','green','blue','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','red','green','blue'],
+    ['green','blue','blue','yellow'],
+    ['yellow','yellow','red','green'],
+    ['blue','green','red','yellow'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','red','yellow'],
+    ['blue','yellow','blue','green'],
+    ['green','red','yellow','blue'],
+    ['yellow','blue','green','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','blue','yellow','green'],
+    ['green','yellow','blue','red'],
+    ['yellow','green','red','blue'],
+    ['blue','red','green','yellow'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','yellow'],
+    ['purple','red','green','blue'],
+    ['yellow','purple','red','green'],
+    ['blue','yellow','purple','red'],
+    ['green','blue','yellow','purple'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','purple','green','blue'],
+    ['yellow','blue','purple','green'],
+    ['green','red','yellow','purple'],
+    ['blue','green','red','yellow'],
+    ['purple','yellow','blue','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','purple','yellow'],
+    ['blue','yellow','green','red'],
+    ['purple','red','blue','green'],
+    ['yellow','purple','red','blue'],
+    ['green','blue','yellow','purple'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','yellow'],
+    ['green','blue','yellow','purple'],
+    ['blue','yellow','purple','red'],
+    ['yellow','purple','red','green'],
+    ['purple','red','green','blue'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','red','green','blue'],
+    ['yellow','yellow','purple','green'],
+    ['blue','blue','yellow','purple'],
+    ['green','green','red','yellow'],
+    ['purple','purple','blue','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','red','green'],
+    ['blue','yellow','blue','yellow'],
+    ['purple','red','purple','red'],
+    ['green','blue','green','blue'],
+    ['yellow','purple','yellow','purple'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','red','red','green'],
+    ['blue','blue','blue','yellow'],
+    ['purple','purple','purple','red'],
+    ['green','green','green','blue'],
+    ['yellow','yellow','yellow','purple'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','purple'],
+    ['yellow','red','green','blue'],
+    ['purple','yellow','red','green'],
+    ['blue','purple','yellow','red'],
+    ['green','blue','purple','yellow'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','yellow','blue'],
+    ['purple','blue','green','red'],
+    ['yellow','purple','blue','green'],
+    ['blue','yellow','red','purple'],
+    ['green','red','purple','yellow'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','blue','red','blue'],
+    ['green','yellow','green','yellow'],
+    ['purple','red','purple','red'],
+    ['blue','green','blue','green'],
+    ['yellow','purple','yellow','purple'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','yellow','green','blue'],
+    ['purple','green','yellow','red'],
+    ['blue','purple','green','yellow'],
+    ['green','red','blue','purple'],
+    ['yellow','blue','red','green'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','purple','red','purple'],
+    ['green','yellow','green','yellow'],
+    ['blue','red','blue','red'],
+    ['purple','green','purple','green'],
+    ['yellow','blue','yellow','blue'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','purple','blue'],
+    ['yellow','blue','green','purple'],
+    ['purple','yellow','red','green'],
+    ['blue','purple','yellow','red'],
+    ['green','red','blue','yellow'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','yellow'],
+    ['purple','orange','red','green'],
+    ['blue','yellow','purple','orange'],
+    ['green','blue','yellow','purple'],
+    ['orange','red','green','blue'],
+    ['yellow','purple','orange','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','yellow'],
+    ['green','blue','yellow','purple'],
+    ['blue','yellow','purple','orange'],
+    ['yellow','purple','orange','red'],
+    ['purple','orange','red','green'],
+    ['orange','red','green','blue'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','red','green','blue'],
+    ['yellow','yellow','purple','orange'],
+    ['green','green','blue','yellow'],
+    ['purple','purple','orange','red'],
+    ['blue','blue','yellow','green'],
+    ['orange','orange','red','purple'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','red','green'],
+    ['blue','yellow','blue','yellow'],
+    ['purple','orange','purple','orange'],
+    ['green','blue','green','blue'],
+    ['yellow','purple','yellow','purple'],
+    ['orange','red','orange','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','orange','green','blue'],
+    ['yellow','purple','orange','green'],
+    ['blue','yellow','purple','red'],
+    ['green','blue','yellow','orange'],
+    ['purple','red','green','yellow'],
+    ['orange','purple','red','blue'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','blue','yellow'],
+    ['purple','orange','green','red'],
+    ['blue','yellow','orange','purple'],
+    ['green','blue','red','yellow'],
+    ['orange','purple','yellow','green'],
+    ['yellow','red','purple','orange'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','blue','green','yellow'],
+    ['orange','purple','yellow','green'],
+    ['green','yellow','purple','orange'],
+    ['yellow','green','blue','red'],
+    ['purple','orange','red','blue'],
+    ['blue','red','orange','purple'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','orange','red','orange'],
+    ['green','blue','green','blue'],
+    ['yellow','purple','yellow','purple'],
+    ['orange','green','orange','green'],
+    ['blue','yellow','blue','yellow'],
+    ['purple','red','purple','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','purple','blue','green'],
+    ['yellow','orange','green','purple'],
+    ['blue','red','orange','yellow'],
+    ['green','blue','purple','orange'],
+    ['purple','yellow','red','blue'],
+    ['orange','green','yellow','red'],
+    [],
+    []
+  ]
+},
+{
+  rods: [
+    ['red','green','purple','yellow'],
+    ['blue','orange','yellow','green'],
+    ['purple','red','blue','orange'],
+    ['yellow','purple','green','red'],
+    ['orange','blue','red','purple'],
+    ['green','yellow','orange','blue'],
+    [],
+    []
+  ]
+}
+];
+
+let currentLevel = 0;
+let selectedRod = null;
+
+const rodsContainer = document.getElementById('rods');
+const nextBtn = document.getElementById('nextBtn');
+
+/* =========================
+   LOAD LEVEL
+========================= */
+function loadLevel(index) {
+  rodsContainer.innerHTML = '';
+  selectedRod = null;
+  nextBtn.style.display = 'none';
+
+  levels[index].rods.forEach((rodData) => {
+    const rod = document.createElement('div');
+    rod.className = 'rod';
+
+    rodData.forEach(color => {
+      const block = document.createElement('div');
+      block.className = 'block';
+      block.style.background = color;
+      rod.appendChild(block);
+    });
+
+    rod.addEventListener('click', () => onRodClick(rod));
+    rodsContainer.appendChild(rod);
+  });
+}
+
+/* =========================
+   CLICK LOGIC
+========================= */
+function onRodClick(rod) {
+  if (!selectedRod) {
+    if (rod.children.length === 0) return;
+    selectRod(rod);
+    return;
+  }
+
+  if (rod === selectedRod) {
+    deselectRod();
+    return;
+  }
+
+  tryMove(selectedRod, rod);
+}
+
+/* =========================
+   SELECT / DESELECT
+========================= */
+function selectRod(rod) {
+  deselectRod();
+  selectedRod = rod;
+  rod.classList.add('selected');
+}
+
+function deselectRod() {
+  if (selectedRod) {
+    selectedRod.classList.remove('selected');
+    selectedRod = null;
+  }
+}
+
+/* =========================
+   MOVE RULES
+========================= */
+function tryMove(fromRod, toRod) {
+  if (toRod.children.length >= MAX_BLOCKS) {
+    deselectRod();
+    return;
+  }
+
+  const block = fromRod.lastElementChild;
+  if (!block) return;
+
+  const topTo = toRod.lastElementChild;
+
+  if (!topTo || topTo.style.background === block.style.background) {
+    toRod.appendChild(block); // REMOVE do antigo e adiciona no novo
+    deselectRod();
+    checkWin();
+  } else {
+    deselectRod();
+  }
+}
+
+/* =========================
+   WIN CHECK
+========================= */
+function checkWin() {
+  const rods = document.querySelectorAll('.rod');
+  let won = true;
+
+  rods.forEach(rod => {
+    const blocks = [...rod.children];
+    if (blocks.length === 0) return;
+
+    if (blocks.length !== MAX_BLOCKS) {
+      won = false;
+      return;
+    }
+
+    const color = blocks[0].style.background;
+    if (!blocks.every(b => b.style.background === color)) {
+      won = false;
+    }
+  });
+
+  if (won) {
+    nextBtn.style.display = 'inline-block';
+  }
+}
+
+/* =========================
+   NEXT LEVEL
+========================= */
+nextBtn.addEventListener('click', () => {
+  currentLevel++;
+  if (currentLevel >= levels.length) {
+    alert('🎉 Você zerou o jogo!');
+    currentLevel = 0;
+  }
+  loadLevel(currentLevel);
+});
+
+loadLevel(currentLevel);
+</script>
+
+</body>
+  <footer>©2026 Viniciusav</footer>
+</html>
