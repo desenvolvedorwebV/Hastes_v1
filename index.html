@@ -565,8 +565,8 @@
 				rod.addEventListener('click', () => onRodClick(rod));
 				rodsContainer.appendChild(rod);
 			});
-			cronometro('reset');
-			cronometro('start');
+			//cronometro('reset');
+			//cronometro('start');
 			levelDisplay.textContent = `Nível ${currentLevel + 1}`;
 		}
 
@@ -651,7 +651,7 @@
 
 			if (won) 
 			{
-				cronometro('stop');
+				//cronometro('stop');
 				nextBtn.style.display = 'inline-block';
 			}
 		}
@@ -719,6 +719,7 @@
 		});
 
 		loadLevel(currentLevel);
+		cronometro('start');
 
 		/*for (let i = 0; i < levels.length; i++)
 		{
