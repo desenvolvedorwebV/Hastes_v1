@@ -47,7 +47,7 @@
 
 			.hud-container {
 				display: flex;
-				flex-wrap: wrap;   /* permite quebrar linha */
+				flex-wrap: wrap;
 				gap: 5px;
 				align-items: center;
 				justify-content: center;
@@ -65,7 +65,7 @@
 				vertical-align: middle;
 				color: #fff;
 				font-weight: bold;
-			font-size:13px;
+				font-size:13px;
 			}
 
 			.rod.selected {
@@ -103,44 +103,44 @@
 				text-align: center;
 				padding: 10px;
 			}
-	
-		@keyframes completeRod {
-  0% {
-    background: transparent;
-    transform: scale(1);
-  }
-  40% {
-    background: var(--rod-color);
-    transform: scale(1.05);
-  }
-  70% {
-    background: var(--rod-color);
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.8);
-  	border:none;
-  }
-}
-
-.rod.completed {
-  animation: completeRod 1s ease forwards;
-}
+			
+			@keyframes completeRod {
+				0% {
+					background: transparent;
+					transform: scale(1);
+				}
+				
+				40% {
+					background: var(--rod-color);
+					transform: scale(1.05);
+				}
+				
+				70% {
+					background: var(--rod-color);
+					transform: scale(1);
+				}
+				
+				100% {
+					opacity: 0;
+					transform: scale(0.8);
+					border:none;
+				}
+			}
+			
+			.rod.completed {
+				animation: completeRod 1s ease forward;
+			}
 		</style>
 	</head>
 
 	<body>
-
 		<div id="game">
-			<h1>GameOrganize</h1>
 			<div class="hud-container">
 				<div class="hud" id="level">Nível<br>1</div>
- 		<div class="hud" id="movimentos">Movimentos:<br>0</div>
-					<div class="hud" id="cronometro">00:00:00</div>
+				<div class="hud" id="movimentos">Movimentos:<br>0</div>
+				<div class="hud" id="cronometro">Tempo:<br>00:00:00</div>
 			</div>
 			<div id="rods"></div>
-
 			<div id="controls">
 				<button id="nextBtn" style="display:none;">Próximo Nível</button>
 			</div>
@@ -645,17 +645,15 @@
 
 			if (!topTo || topTo.style.background === block.style.background) 
 			{
-toRod.appendChild(block);
+				toRod.appendChild(block);
 				movimentos++;
-moveDisplay.innerHTML = `Movimentos:<br>${movimentos}`;
-deselectRod();
-// verifica se alguma haste foi completada
-checkCompletedRod(toRod);
-checkCompletedRod(fromRod);
-	
-
-// continua checando vitória
-checkWin();
+				moveDisplay.innerHTML = `Movimentos:<br>${movimentos}`;
+				deselectRod();
+				
+				checkCompletedRod(toRod);
+				checkCompletedRod(fromRod);
+				
+				checkWin();
 			} 
 			else 
 			{
@@ -692,7 +690,51 @@ checkWin();
 			}
 		}
 
-		function validarLevel(level, MAX_BLOCKS)
+		let timer, segundos = 0;
+
+		function cronometro(acao) 
+		{
+			const el = document.getElementById('cronometro');
+
+			if (acao === 'start' && !timer) 
+			{
+				timer = setInterval(() => {
+					segundos++;
+					el.innerHtml = Tempo:<br> + new Date(segundos * 1000)
+					.toISOString().substr(11, 8);
+				}, 1000);
+			}
+
+			if (acao === 'stop') 
+			{
+				clearInterval(timer);
+				timer = null;
+			}
+
+			if (acao === 'reset') 
+			{
+				clearInterval(timer);
+				timer = null;
+				segundos = 0;
+				el.innerHtml = 'Tempo:<br>00:00:00';
+			}
+		}
+
+		nextBtn.addEventListener('click', () => {
+			currentLevel++;
+			if (currentLevel >= levels.length) 
+			{
+				alert('🎉 Você zerou o jogo!');
+				currentLevel = 0;
+			}
+			loadLevel(currentLevel);
+			cronometro('start');
+		});
+
+		loadLevel(currentLevel);
+		cronometro('start');
+
+		/*function validarLevel(level, MAX_BLOCKS)
 		{
 			const contador = {};
 
@@ -712,53 +754,8 @@ checkWin();
 
 			return true;
 		}
-
-		let timer, segundos = 0;
-
-		function cronometro(acao) 
-		{
-			const el = document.getElementById('cronometro');
-
-			if (acao === 'start' && !timer) 
-			{
-				timer = setInterval(() => {
-					segundos++;
-					el.innerText = new Date(segundos * 1000)
-					.toISOString().substr(11, 8);
-				}, 1000);
-			}
-
-			if (acao === 'stop') 
-			{
-				clearInterval(timer);
-				timer = null;
-			}
-
-			if (acao === 'reset') 
-			{
-				clearInterval(timer);
-				timer = null;
-				segundos = 0;
-				el.innerText = '00:00:00';
-			}
-		}
-
-
-		nextBtn.addEventListener('click', () => {
-			currentLevel++;
-			if (currentLevel >= levels.length) 
-			{
-				alert('🎉 Você zerou o jogo!');
-				currentLevel = 0;
-			}
-			loadLevel(currentLevel);
-			cronometro('start');
-		});
-
-		loadLevel(currentLevel);
-		cronometro('start');
-
-		/*for (let i = 0; i < levels.length; i++)
+			
+		for (let i = 0; i < levels.length; i++)
 		{
 			const level = levels[i];
 
@@ -767,30 +764,29 @@ checkWin();
 			if (!valido) 
 			{
 				console.warn(`⚠️ Problema encontrado no level ${i + 1}`);
-				break; // pare aqui se quiser interromper no primeiro erro
+				break;
 			}
 		}*/
-function checkCompletedRod(rod) {
-  const blocks = [...rod.children];
-
-  if (blocks.length !== MAX_BLOCKS) return false;
-
-  const color = blocks[0].style.background;
-  if (!blocks.every(b => b.style.background === color)) return false;
-
-  if (rod.classList.contains('completed')) return true;
-
-  rod.style.setProperty('--rod-color', color);
-  rod.classList.add('completed');
-
-  setTimeout(() => {
-    rod.remove(); // 🔥 agora some de verdade
-    checkWin();
-  }, 1000);
-
-  return true;
-}
 		
+		function checkCompletedRod(rod) 
+		{
+			const blocks = [...rod.children];			
+			if (blocks.length !== MAX_BLOCKS) return false;
+			
+			const color = blocks[0].style.background;
+			if (!blocks.every(b => b.style.background === color)) return false;
+			if (rod.classList.contains('completed')) return true;
+			
+			rod.style.setProperty('--rod-color', color);
+			rod.classList.add('completed');
+			
+			setTimeout(() => {
+				rod.remove();
+				checkWin();
+			}, 1000);
+			
+			return true;
+		}		
 	</script>
 </body>
 <div class="footer">©2026 Viniciusav</div>
