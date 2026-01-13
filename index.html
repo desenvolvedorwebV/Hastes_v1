@@ -700,8 +700,7 @@
 			{
 				timer = setInterval(() => {
 					segundos++;
-					el.innerHtml = Tempo:<br> + new Date(segundos * 1000)
-					.toISOString().substr(11, 8);
+					el.innerHTML = "Tempo:<br>" + new Date(segundos * 1000).toISOString().substr(11, 8);
 				}, 1000);
 			}
 
@@ -716,7 +715,7 @@
 				clearInterval(timer);
 				timer = null;
 				segundos = 0;
-				el.innerHtml = 'Tempo:<br>00:00:00';
+				el.innerHTML = 'Tempo:<br>00:00:00';
 			}
 		}
 
