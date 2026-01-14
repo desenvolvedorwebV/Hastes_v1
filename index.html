@@ -812,6 +812,11 @@
 			soundEnabled = !soundEnabled;
 			soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
 		});
+
+		const resetBtn = document.getElementById('resetNivel');
+		resetBtn.addEventListener('click', () => {
+			loadLevel(currentLevel);
+		});
 	</script>
 </body>
 <div class="footer">©2026 Viniciusav</div>
