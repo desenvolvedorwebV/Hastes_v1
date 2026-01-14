@@ -567,7 +567,7 @@
 			}
 			];
 
-		let currentLevel = 0;
+		let currentLevel = 39;
 		let selectedRod = null;
 		let movimentos = 0;
 
@@ -736,6 +736,10 @@
 			{
 				alert('🎉 Você zerou o jogo!');
 				currentLevel = 0;
+				movimentos = 0;
+				segundos = 0;
+				cronometro('reset');
+				document.getElementById('cronometro').innerHTML = 'Tempo:<br>00:00:00';
 			}
 			loadLevel(currentLevel);
 			cronometro('start');
