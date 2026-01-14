@@ -567,7 +567,7 @@
 			}
 			];
 
-		let currentLevel = 39;
+		let currentLevel = 0;
 		let selectedRod = null;
 		let movimentos = 0;
 
@@ -739,6 +739,7 @@
 				movimentos = 0;
 				segundos = 0;
 				cronometro('reset');
+				moveDisplay.innerHTML = 'Movimentos:<br>0';
 				document.getElementById('cronometro').innerHTML = 'Tempo:<br>00:00:00';
 			}
 			loadLevel(currentLevel);
