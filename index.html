@@ -805,7 +805,13 @@
 			}, 1000);
 			
 			return true;
-		}		
+		}
+		
+		const soundBtn = document.getElementById('som');
+		soundBtn.addEventListener('click', () => {
+			soundEnabled = !soundEnabled;
+			soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+		});
 	</script>
 </body>
 <div class="footer">©2026 Viniciusav</div>
