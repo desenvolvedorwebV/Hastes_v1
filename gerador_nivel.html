@@ -1,1 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerador de Níveis</title>
 
+<style>
+body {
+  background:#121212;
+  color:white;
+  font-family:Arial;
+  margin:0;
+  padding:20px;
+  text-align:center;
+}
+
+.controls {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-bottom:20px;
+}
+
+input, select, button {
+  padding:8px;
+  border-radius:6px;
+  border:none;
+}
+
+#rods {
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.rod {
+  width:52px;
+  height:170px;
+  border:3px solid #444;
+  border-radius:14px;
+  padding:6px;
+  display:flex;
+  flex-direction:column-reverse;
+  cursor:pointer;
+}
+
+.block {
+  height:36px;
+  border-radius:8px;
+  margin:4px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎛️ Gerador de Níveis</h2>
+
+<div class="controls">
+  <input id="levelName" placeholder="Nome do nível">
+  <input id="author" placeholder="Seu nickname">
+
+  <input type="number" id="rodCount" min="2" max="10" value="3">
+  <input type="number" id="maxBlocks" min="1" max="6" value="4">
+
+  <select id="colorSelect">
+    <option value="red">Vermelho</option>
+    <option value="blue">Azul</option>
+    <option value="green">Verde</option>
+    <option value="yellow">Amarelo</option>
+    <option value="purple">Roxo</option>
+    <option value="orange">Laranja</option>
+  </select>
+
+  <button onclick="createRods()">Criar Hastes</button>
+  <button onclick="exportLevel()">💾 Salvar .nvl</button>
+</div>
+
+<div id="rods"></div>
+
+<script>
+let MAX_BLOCKS = 4;
+let rodsData = [];
+
+function createRods() {
+  const count = +rodCount.value;
+  MAX_BLOCKS = +maxBlocks.value;
+  rodsData = Array.from({length:count}, ()=>[]);
+  render();
+}
+
+function render() {
+  rods.innerHTML = "";
+  rodsData.forEach((rod, i)=>{
+    const div = document.createElement("div");
+    div.className = "rod";
+
+    rod.forEach((color, idx)=>{
+      const b = document.createElement("div");
+      b.className = "block";
+      b.style.background = color;
+      b.onclick = e => {
+        e.stopPropagation();
+        rod.splice(idx,1);
+        render();
+      };
+      div.appendChild(b);
+    });
+
+    div.onclick = () => {
+      if (rod.length >= MAX_BLOCKS) return;
+      rod.push(colorSelect.value);
+      render();
+    };
+
+    rods.appendChild(div);
+  });
+}
+
+function exportLevel() {
+  if (!levelName.value || !author.value) {
+    alert("Preencha nome do nível e nickname");
+    return;
+  }
+
+  const level = {
+    name: levelName.value,
+    author: author.value,
+    createdAt: new Date().toISOString().slice(0,10),
+    rods: rodsData
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(level, null, 2)],
+    {type:"text/plain"}
+  );
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = level.name.replace(/\s+/g,"_") + ".nvl";
+  a.click();
+}
+</script>
+
+</body>
+</html>
