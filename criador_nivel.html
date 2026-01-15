@@ -72,8 +72,9 @@ input, select, button {
 <body>
 
 <h2>🎛️ Criador de Níveis</h2>
-
-<div class="controls">
+<div id="game">
+			<div class="hud-container">
+				<div class="controls">
   <input id="levelName" placeholder="Nome do nível">
   <input id="author" placeholder="Seu nickname">
 
@@ -92,9 +93,10 @@ input, select, button {
   <button onclick="createRods()">Criar Hastes</button>
   <button onclick="exportLevel()">💾 Salvar .nvl</button>
 </div>
+			</div>
 
 <div id="rods"></div>
-
+</div>
 <script>
 let MAX_BLOCKS = 4;
 let rodsData = [];
