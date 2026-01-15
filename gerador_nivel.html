@@ -134,7 +134,7 @@ function exportLevel() {
 
   const blob = new Blob(
     [JSON.stringify(level, null, 2)],
-    {type:"text/plain"}
+    { type: "application/octet-stream" }
   );
 
   const a = document.createElement("a");
